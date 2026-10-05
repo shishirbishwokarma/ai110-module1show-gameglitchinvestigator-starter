@@ -4,17 +4,17 @@ flowchart TD
     subgraph App ["app.py - Streamlit UI"]
         UI[Sidebar + guess input + buttons]
         State[("st.session_state<br/>secret, attempts, score,<br/>status, history, difficulty")]
-        Range[get_range_for_difficulty]
         NewGame["start_new_game<br/>secret from current range"]
-        Score[update_score]
     end
 
     subgraph Logic ["logic_utils.py - game logic"]
         Parse["parse_guess<br/>strip, convert, range check"]
         Check["check_guess<br/>Win / Too High / Too Low"]
+        Range[get_range_for_difficulty]
+        Score[update_score]
     end
 
-    UI --> Range
+    UI -->|difficulty| Range
     Range -->|low, high| NewGame
     UI -->|New Game or difficulty change| NewGame
     NewGame -->|reset| State
@@ -23,7 +23,7 @@ flowchart TD
     UI -->|guess| Check
     State -->|secret| Check
     Check -->|outcome + hint| UI
-    UI --> Score
+    UI -->|outcome, attempt| Score
     Score -->|new score| State
     UI -->|show hint, win/lose| User
 
