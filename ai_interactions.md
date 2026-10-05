@@ -28,9 +28,10 @@
 
 | Edge Case | Prompt Used | AI-Suggested Test | Did It Pass? | Your Reasoning |
 |-----------|-------------|-------------------|--------------|----------------|
-| | | | | |
-| | | | | |
-| | | | | |
+| Decimal like "3.7" | "write edge case tests for parse_guess and check_guess" | `parse_guess("3.7", 1, 100) == (True, 3, None)` | Yes | the old code already rounded down, good to lock it in |
+| Spaces / empty input | same prompt | tests for `"  42 "`, `""` and `"   "` | Yes after fix | spaces only used to say "not a number" instead of "enter a guess", added strip() |
+| Negative or huge guess | same prompt | `parse_guess("-5", 1, 100)` and `"99999"` should be rejected | Failed first, then yes | game was accepting guesses outside the range, added a range check |
+| "9" vs secret 50 | same prompt | `check_guess(9, 50)` should be Too Low | Yes | this was the string secret bug, fixed it in app.py so the secret stays a number |
 
 ---
 

@@ -25,28 +25,48 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+It's a number guessing game made with Streamlit. You pick a difficulty, guess the secret number, and the game tells you to go higher or lower until you get it or run out of tries.
+
+When I played it the hints were backwards, too high told me to go higher. The secret also turned into text on some tries, so "9" counted as bigger than "50". And Hard mode says 1-50 in the sidebar but the game still says 1-100.
+
+I moved check_guess and parse_guess into logic_utils.py and flipped the hints. I took out the part that turned the secret into a string, so the game always compares real numbers now. parse_guess also checks the range, so stuff like -5 or 99999 gets rejected. Added tests for all of it, fixed the old tests, and added a pytest.ini so pytest could find logic_utils. Haven't fixed the Hard mode range thing yet.
 
 ## 📸 Demo Walkthrough
 
 Describe your fixed game in numbered steps so a reader can follow along without watching a video:
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+1. Start on Normal, open the debug panel to see the secret (it was 50)
+2. Guess 40, game says "Go HIGHER!", score goes to -5
+3. Guess 70, game says "Go LOWER!", score goes to -10
+4. Guess 50, game says "Correct!", balloons show up, final score is 40
+5. Game's over after the win, it tells you to start a new game
 
-**Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
+**Screenshot:** none, walkthrough above
 
 ## 🧪 Test Results
 
 ```
-# Paste your pytest output here, e.g.:
-# pytest tests/
-# ========================= X passed in 0.XXs =========================
+$ pytest -v
+============================= test session starts ==============================
+plugins: anyio-4.15.1
+collecting ... collected 14 items
+
+tests/test_game_logic.py::test_winning_guess PASSED                      [  7%]
+tests/test_game_logic.py::test_guess_too_high PASSED                     [ 14%]
+tests/test_game_logic.py::test_guess_too_low PASSED                      [ 21%]
+tests/test_game_logic.py::test_too_high_guess_hints_lower PASSED         [ 28%]
+tests/test_game_logic.py::test_too_low_guess_hints_higher PASSED         [ 35%]
+tests/test_game_logic.py::test_decimal_guess_rounds_down PASSED          [ 42%]
+tests/test_game_logic.py::test_guess_with_spaces PASSED                  [ 50%]
+tests/test_game_logic.py::test_empty_guess_rejected PASSED               [ 57%]
+tests/test_game_logic.py::test_spaces_only_guess_rejected PASSED         [ 64%]
+tests/test_game_logic.py::test_letters_rejected PASSED                   [ 71%]
+tests/test_game_logic.py::test_negative_guess_rejected PASSED            [ 78%]
+tests/test_game_logic.py::test_guess_above_range_rejected PASSED         [ 85%]
+tests/test_game_logic.py::test_guess_at_range_edges_accepted PASSED      [ 92%]
+tests/test_game_logic.py::test_one_digit_vs_two_digit_secret PASSED      [100%]
+
+============================== 14 passed in 0.01s ==============================
 ```
 
 ## 🚀 Stretch Features
