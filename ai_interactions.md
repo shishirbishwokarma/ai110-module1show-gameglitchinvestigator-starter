@@ -95,15 +95,15 @@ It also suggested changing `low: int = None` to `low: int | None = None` since t
 
 **Task given to both models:**
 
-<!-- Describe what you asked each model to do -->
+I gave both the same prompt in a fresh chat: the original starter `check_guess` and "When the guess is higher than the secret, the player is told 'Go HIGHER!', which is backwards. Fix the bug and explain why it happened."
 
 | | Model A | Model B |
 |-|---------|---------|
-| **Model name** | | |
-| **Response summary** | | |
-| **More Pythonic?** | | |
-| **Clearer explanation?** | | |
+| **Model name** | Claude (Opus 5.5, in Claude Code) | ChatGPT |
+| **Response summary** | Swapped the two messages and also deleted the whole `try/except TypeError` part, so the function is just 3 `if`s with type hints | Swapped the messages in both places (normal branch and the `except TypeError` branch) and left everything else the same |
+| **More Pythonic?** | Yes. Shorter, no try/except hiding problems, type hints. But it changed more than I asked for | Less Pythonic since it keeps the weird string fallback, but it's the smallest and safest fix |
+| **Clearer explanation?** | Explained the hint bug and also why the string fallback is bad ("9" > "50"), which is actually my other bug | Clearer for this bug. It walks through guess > secret step by step with the code right there, easy to follow |
 
 **Which did you prefer and why?**
 
-<!-- Your conclusion -->
+ChatGPT explained the actual bug better, it was simple and showed the exact line. Claude's code is cleaner and it noticed the string comparison problem, which ChatGPT kept without saying anything. But deleting the fallback only works if the secret is always an int, and in the starter app it wasn't, so Claude's version alone would've crashed on every other guess until I fixed app.py too. So I liked ChatGPT's explanation more and Claude's code more. In my actual project I did the safe swap like ChatGPT and fixed app.py so the secret always stays an int, so the fallback never runs anymore.
