@@ -3,8 +3,9 @@ flowchart TD
 
     subgraph App ["app.py - Streamlit UI"]
         UI[Sidebar + guess input + buttons]
-        State[("st.session_state<br/>secret, attempts, score,<br/>status, history")]
+        State[("st.session_state<br/>secret, attempts, score,<br/>status, history, difficulty")]
         Range[get_range_for_difficulty]
+        NewGame["start_new_game<br/>secret from current range"]
         Score[update_score]
     end
 
@@ -14,18 +15,23 @@ flowchart TD
     end
 
     UI --> Range
+    Range -->|low, high| NewGame
+    UI -->|New Game or difficulty change| NewGame
+    NewGame -->|reset| State
     UI -->|raw text, low, high| Parse
     Parse -->|guess int or error| UI
-    UI -->|guess, secret| Check
+    UI -->|guess| Check
     State -->|secret| Check
     Check -->|outcome + hint| UI
     UI --> Score
     Score -->|new score| State
     UI -->|show hint, win/lose| User
 
-    subgraph Tests ["tests/test_game_logic.py"]
-        T[14 pytest tests]
+    subgraph Tests ["tests/ - 18 pytest tests"]
+        TL["test_game_logic.py<br/>14 tests"]
+        TA["test_app.py<br/>4 tests, runs app with AppTest"]
     end
-    T -.->|imports| Parse
-    T -.->|imports| Check
-    Ini["pytest.ini<br/>pythonpath = ."] -.-> T
+    TL -.->|imports| Parse
+    TL -.->|imports| Check
+    TA -.->|runs| App
+    Ini["pytest.ini<br/>pythonpath = ."] -.-> Tests
