@@ -54,7 +54,9 @@ I tried guesses above and below the secret and checked the hints went the right 
 - Describe at least one test you ran (manual or using pytest)  
   and what it showed you about your code.
 
-I added a test where the secret is 50 and the guess is 60, and it checks the hint says LOWER. It passes now and would've failed before. pytest also showed the old tests were broken (they expected a string, not a tuple), so we fixed those too. All 5 pass now.
+I added a test where the secret is 50 and the guess is 60, and it checks the hint says LOWER. It passes now and would've failed before. pytest also showed the old tests were broken (they expected a string, not a tuple), so we fixed those too. Later I added edge case tests (decimals, negatives, empty input, etc.) and all 14 pass now.
+
+One thing that tripped me up: when I first ran `pytest` I got `ModuleNotFoundError: No module named 'logic_utils'` and none of the tests even ran. The code was fine, pytest just wasn't looking in the project folder. `python3 -m pytest` worked, and adding a pytest.ini with `pythonpath = .` fixed it for good.
 
 - Did AI help you design or understand any tests? How?
 
@@ -66,11 +68,21 @@ Yeah, Claude wrote the hint tests and made them check the message, not just "Too
 
 - How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
 
+Every time you click a button or type something, Streamlit runs your whole script again from the top. So normal variables just reset every time. Session state is like a little backpack that survives the rerun, so stuff like the secret number, score and attempts go in there or they'd get wiped every click.
+
 ---
 
 ## 5. Looking ahead: your developer habits
 
 - What is one habit or strategy from this project that you want to reuse in future labs or projects?
   - This could be a testing habit, a prompting strategy, or a way you used Git.
+
+Marking the bug with a FIXME first, then fixing one bug at a time and writing a test for it. Made it way easier to know when something was actually fixed.
+
 - What is one thing you would do differently next time you work with AI on a coding task?
+
+Actually run the game myself after each fix. I leaned on the tests a lot and didn't play it enough.
+
 - In one or two sentences, describe how this project changed the way you think about AI generated code.
+
+AI code can look fine and still be totally wrong, like hints that were just backwards. I have to check it myself, I can't just trust it.
