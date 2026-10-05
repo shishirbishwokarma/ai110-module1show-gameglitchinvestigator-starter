@@ -31,6 +31,18 @@ def update_score(current_score: int, outcome: str, attempt_number: int):
 
     return current_score
 
+
+# FIX: new game used to always pick from 1-100 and never reset the status,
+# so on Hard you could get a secret of 80 and never win. now everything
+# resets using the range for the current difficulty
+def start_new_game(low: int, high: int):
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.attempts = 1
+    st.session_state.score = 0
+    st.session_state.status = "playing"
+    st.session_state.history = []
+
+
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 
 st.title("🎮 Game Glitch Investigator")
@@ -56,25 +68,15 @@ low, high = get_range_for_difficulty(difficulty)
 st.sidebar.caption(f"Range: {low} to {high}")
 st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
 
-if "secret" not in st.session_state:
-    st.session_state.secret = random.randint(low, high)
-
-if "attempts" not in st.session_state:
-    st.session_state.attempts = 1
-
-if "score" not in st.session_state:
-    st.session_state.score = 0
-
-if "status" not in st.session_state:
-    st.session_state.status = "playing"
-
-if "history" not in st.session_state:
-    st.session_state.history = []
+# switching difficulty starts a fresh game so the secret fits the new range
+if "secret" not in st.session_state or st.session_state.get("difficulty") != difficulty:
+    st.session_state.difficulty = difficulty
+    start_new_game(low, high)
 
 st.subheader("Make a guess")
 
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -99,8 +101,7 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
-    st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
+    start_new_game(low, high)
     st.success("New game started.")
     st.rerun()
 

@@ -1,0 +1,37 @@
+Bug repro: ran the original starter game and the fixed game with the same inputs,
+using Streamlit's AppTest (it runs app.py like a real session and clicks the buttons).
+
+What to look for:
+- Guess 60 when the secret is 50: before says "Go HIGHER!" (backwards), after says "Go LOWER!".
+- Guess 9 when the secret is 50: before, the score went UP 5. That's because the secret was a
+  string on attempt 2 so "9" > "50" counted as Too High. The hint only looks right because the
+  hints were also backwards, so the two bugs cancel out. After, it's Too Low and the score drops.
+- Hard mode: before, the prompt says 1 to 100 while the sidebar says 1 to 50, and New Game
+  picks secrets above 50. After, the prompt says 1 to 50 and every secret is in range.
+
+BEFORE: original starter app.py (commit f651d72)
+
+== Run 1: Normal difficulty, secret forced to 50 ==
+guess   9 (attempt 2) -> ['warning: Go HIGHER!']  score=5
+guess  60 (attempt 3) -> ['warning: Go HIGHER!']  score=0
+guess  40 (attempt 4) -> ['warning: Go LOWER!']  score=-5
+
+== Run 2: Hard difficulty ==
+sidebar: ['Range: 1 to 50', 'Attempts allowed: 5']
+prompt : Guess a number between 1 and 100. Attempts left: 4
+secrets after clicking New Game 20 times: [8, 77, 43, 96, 77, 62, 14, 42, 74, 76, 48, 38, 22, 50, 95, 100, 40, 29, 6, 86]
+secrets above 50: [77, 96, 77, 62, 74, 76, 95, 100, 86]
+
+
+AFTER: fixed app.py
+
+== Run 1: Normal difficulty, secret forced to 50 ==
+guess   9 (attempt 2) -> ['warning: Go HIGHER!']  score=-5
+guess  60 (attempt 3) -> ['warning: Go LOWER!']  score=-10
+guess  40 (attempt 4) -> ['warning: Go HIGHER!']  score=-15
+
+== Run 2: Hard difficulty ==
+sidebar: ['Range: 1 to 50', 'Attempts allowed: 5']
+prompt : Guess a number between 1 and 50. Attempts left: 4
+secrets after clicking New Game 20 times: [44, 12, 50, 8, 9, 40, 23, 46, 3, 5, 23, 45, 21, 42, 25, 12, 41, 25, 11, 49]
+secrets above 50: []

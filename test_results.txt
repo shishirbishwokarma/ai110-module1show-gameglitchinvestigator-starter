@@ -2,9 +2,9 @@
 platform darwin -- Python 3.14.8, pytest-9.1.1, pluggy-1.6.0
 rootdir: /Users/shishirbishwokarma/Documents/ai110-module1show-gameglitchinvestigator-starter
 configfile: pytest.ini
-plugins: anyio-4.15.1
-collected 14 items
+collected 18 items
 
+tests/test_app.py ....                                                   [ 22%]
 tests/test_game_logic.py ..............                                  [100%]
 
-============================== 14 passed in 0.02s ==============================
+============================== 18 passed in 0.61s ==============================

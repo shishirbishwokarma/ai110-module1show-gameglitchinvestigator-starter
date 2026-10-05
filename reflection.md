@@ -11,9 +11,11 @@ Looked like a normal guessing game, but the hints made no sense and kept sending
 - List at least two concrete bugs you noticed at the start  
   (for example: "the hints were backwards").
 
-- Hints were backwards (too high said go higher)
-- On some tries the secret turned into text, so "9" counted as bigger than "50"
-- Hard mode says 1–50 in the sidebar but the game still says 1–100
+- Hints were backwards (too high said go higher). Cause: in `check_guess` the two messages were just swapped.
+- On some tries the secret turned into text, so "9" counted as bigger than "50". Cause: app.py did `secret = str(st.session_state.secret)` on every even attempt, and `check_guess` fell back to comparing strings.
+- Hard mode says 1–50 in the sidebar but the game still says 1–100. Cause: the prompt text was hardcoded to "between 1 and 100" and New Game always did `random.randint(1, 100)`, so on Hard you could get a secret like 80.
+
+I ran the original game with these inputs and saved the real output in bug_repro.txt.
 
 **Bug Reproduction Log**
 
@@ -22,8 +24,9 @@ Document at least 3 bugs you found. Add rows as needed.
 | Input | Expected Behavior | Actual Behavior | Console Output / Error |
 |-------|-------------------|-----------------|------------------------|
 | Secret 50, guess 60 | Go LOWER | Go HIGHER | none |
-| Secret 50, guess 9 | Go HIGHER | Too High | none |
+| Secret 50, guess 9 (first try) | Too Low, score goes down | Counted as Too High, score went up 5 (hint still said HIGHER because the hints were backwards too) | none |
 | Pick Hard | Says 1 to 50 | Says 1 to 100 | none |
+| Hard, click New Game | Secret between 1 and 50 | Secrets like 77, 96, 100 | none |
 
 ---
 
@@ -38,7 +41,7 @@ I asked Claude to move `check_guess` from app.py into logic_utils.py, fix the hi
 
 - Give one example of an AI suggestion you did not accept as written (including what the AI suggested, why you rejected or changed it, and how you verified your version). It does not have to be a suggestion that was wrong: over-engineered, out of scope, harder to read, or a poor fit for this codebase all count.
 
-After the refactor, I told Claude I wanted a summary before it changed anything. It saved that as a permanent preference for every future session in this project. That went further than I wanted. I only meant for this chat, and I didn't want it changing how it behaves next time without me knowing. I told it "just summary here", and it deleted the saved preference and kept the summarize-first rule only for this conversation. To check, I watched it delete the saved file, and before every change after that it showed me a summary and waited for my OK, like it did with the pytest.ini fix and the tests.
+When I ran pytest I got `ModuleNotFoundError: No module named 'logic_utils'`. Claude explained that pytest wasn't looking in the project folder, and its quick fix was to just run `python3 -m pytest` instead of `pytest` every time. That works, but I didn't want a workaround I'd have to remember, and VS Code's test panel would still break. So I asked for an actual fix and we added a pytest.ini with `pythonpath = .`. To check, I ran plain `pytest` from the project folder and from inside tests/, and both found all the tests and passed.
 
 
 
@@ -54,7 +57,7 @@ I tried guesses above and below the secret and checked the hints went the right 
 - Describe at least one test you ran (manual or using pytest)  
   and what it showed you about your code.
 
-I added a test where the secret is 50 and the guess is 60, and it checks the hint says LOWER. It passes now and would've failed before. pytest also showed the old tests were broken (they expected a string, not a tuple), so we fixed those too. Later I added edge case tests (decimals, negatives, empty input, etc.) and all 14 pass now.
+I added a test where the secret is 50 and the guess is 60, and it checks the hint says LOWER. It passes now and would've failed before. pytest also showed the old tests were broken (they expected a string, not a tuple), so we fixed those too. Later I added edge case tests (decimals, negatives, empty input, etc.) and tests that run the actual app for the Hard mode bug. All 18 pass now.
 
 One thing that tripped me up: when I first ran `pytest` I got `ModuleNotFoundError: No module named 'logic_utils'` and none of the tests even ran. The code was fine, pytest just wasn't looking in the project folder. `python3 -m pytest` worked, and adding a pytest.ini with `pythonpath = .` fixed it for good.
 
