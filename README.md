@@ -43,6 +43,12 @@ Describe your fixed game in numbered steps so a reader can follow along without 
 
 **Screenshot:** none, walkthrough above
 
+## 🗺️ Architecture
+
+How the UI, game logic and tests connect (source in architecture.mmd):
+
+![Architecture diagram](architecture.png)
+
 ## 🧪 Test Results
 
 ```

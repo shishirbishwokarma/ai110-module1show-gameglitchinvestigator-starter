@@ -1,0 +1,31 @@
+flowchart TD
+    User([Player]) -->|types guess, clicks Submit| UI
+
+    subgraph App ["app.py - Streamlit UI"]
+        UI[Sidebar + guess input + buttons]
+        State[("st.session_state<br/>secret, attempts, score,<br/>status, history")]
+        Range[get_range_for_difficulty]
+        Score[update_score]
+    end
+
+    subgraph Logic ["logic_utils.py - game logic"]
+        Parse["parse_guess<br/>strip, convert, range check"]
+        Check["check_guess<br/>Win / Too High / Too Low"]
+    end
+
+    UI --> Range
+    UI -->|raw text, low, high| Parse
+    Parse -->|guess int or error| UI
+    UI -->|guess, secret| Check
+    State -->|secret| Check
+    Check -->|outcome + hint| UI
+    UI --> Score
+    Score -->|new score| State
+    UI -->|show hint, win/lose| User
+
+    subgraph Tests ["tests/test_game_logic.py"]
+        T[14 pytest tests]
+    end
+    T -.->|imports| Parse
+    T -.->|imports| Check
+    Ini["pytest.ini<br/>pythonpath = ."] -.-> T
