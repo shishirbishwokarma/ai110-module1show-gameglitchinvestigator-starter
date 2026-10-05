@@ -1,0 +1,22 @@
+$ flake8 app.py logic_utils.py tests/
+app.py:7:1: E302 expected 2 blank lines, found 1
+app.py:72:80: E501 line too long (88 > 79 characters)
+app.py:126:80: E501 line too long (83 > 79 characters)
+logic_utils.py:3:80: E501 line too long (87 > 79 characters)
+logic_utils.py:62:80: E501 line too long (87 > 79 characters)
+tests/test_game_logic.py:3:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:8:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:13:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:20:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:26:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:34:1: E402 module level import not at top of file
+tests/test_game_logic.py:36:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:39:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:42:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:46:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:50:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:54:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:58:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:62:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:66:1: E302 expected 2 blank lines, found 1
+(exit code 1)

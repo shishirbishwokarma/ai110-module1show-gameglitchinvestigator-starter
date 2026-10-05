@@ -2,34 +2,12 @@ import random
 import streamlit as st
 
 # FIX: check_guess lives in logic_utils now, Claude updated the import for me
-from logic_utils import check_guess, parse_guess
-
-def get_range_for_difficulty(difficulty: str):
-    if difficulty == "Easy":
-        return 1, 20
-    if difficulty == "Normal":
-        return 1, 100
-    if difficulty == "Hard":
-        return 1, 50
-    return 1, 100
-
-
-def update_score(current_score: int, outcome: str, attempt_number: int):
-    if outcome == "Win":
-        points = 100 - 10 * (attempt_number + 1)
-        if points < 10:
-            points = 10
-        return current_score + points
-
-    if outcome == "Too High":
-        if attempt_number % 2 == 0:
-            return current_score + 5
-        return current_score - 5
-
-    if outcome == "Too Low":
-        return current_score - 5
-
-    return current_score
+from logic_utils import (
+    check_guess,
+    get_range_for_difficulty,
+    parse_guess,
+    update_score,
+)
 
 
 # FIX: new game used to always pick from 1-100 and never reset the status,
@@ -69,7 +47,8 @@ st.sidebar.caption(f"Range: {low} to {high}")
 st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
 
 # switching difficulty starts a fresh game so the secret fits the new range
-if "secret" not in st.session_state or st.session_state.get("difficulty") != difficulty:
+difficulty_changed = st.session_state.get("difficulty") != difficulty
+if "secret" not in st.session_state or difficulty_changed:
     st.session_state.difficulty = difficulty
     start_new_game(low, high)
 
@@ -123,8 +102,8 @@ if submit:
     else:
         st.session_state.history.append(guess_int)
 
-        # FIX: the secret used to turn into a string every other try so "9" > "50".
-        # just compare the real number now
+        # FIX: the secret used to turn into a string every other try,
+        # so "9" > "50". just compare the real number now
         outcome, message = check_guess(guess_int, st.session_state.secret)
 
         if show_hint:

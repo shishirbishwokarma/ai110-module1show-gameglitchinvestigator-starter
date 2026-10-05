@@ -42,18 +42,50 @@
 **Prompt used:**
 
 ```
-<!-- Paste the prompt you gave the AI -->
+Add professional-grade docstrings to every function in logic_utils.py.
+Then review my code for PEP 8 style compliance and apply the suggestions
+to fix any formatting or naming issues.
 ```
 
 **Linting output before:**
 
 ```
-<!-- Paste relevant linter warnings/errors -->
+$ flake8 app.py logic_utils.py tests/
+app.py:7:1: E302 expected 2 blank lines, found 1
+app.py:72:80: E501 line too long (88 > 79 characters)
+app.py:126:80: E501 line too long (83 > 79 characters)
+logic_utils.py:3:80: E501 line too long (87 > 79 characters)
+logic_utils.py:62:80: E501 line too long (87 > 79 characters)
+tests/test_game_logic.py:3:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:8:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:13:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:20:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:26:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:34:1: E402 module level import not at top of file
+tests/test_game_logic.py:36:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:39:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:42:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:46:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:50:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:54:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:58:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:62:1: E302 expected 2 blank lines, found 1
+tests/test_game_logic.py:66:1: E302 expected 2 blank lines, found 1
+(exit code 1)
 ```
+
+After the fixes flake8 comes back clean (see lint_before.txt and lint_after.txt).
 
 **Changes applied:**
 
-<!-- Describe what you changed based on the AI's suggestions -->
+Claude ran flake8 and almost everything was blank line stuff (E302, functions need 2 blank lines between them), mostly in the test file. Also a few lines over 79 chars, and one import in the middle of the test file (E402). I applied all of it:
+
+- added the missing blank lines
+- moved the `parse_guess` import up to the top of the test file
+- split the long `if` in app.py into a `difficulty_changed` variable, and wrapped a long comment
+- the two long lines in logic_utils.py were the leftover `NotImplementedError` stubs, so we moved the real `get_range_for_difficulty` and `update_score` over from app.py instead
+
+It also suggested changing `low: int = None` to `low: int | None = None` since the type was wrong, I took that too. Then it added Google style docstrings (Args / Returns) to all 4 functions in logic_utils.py. No naming changes needed, everything was already snake_case. Ran pytest after and all 18 still pass.
 
 ---
 

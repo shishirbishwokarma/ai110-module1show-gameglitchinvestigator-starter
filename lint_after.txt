@@ -1,0 +1,2 @@
+$ flake8 app.py logic_utils.py tests/
+(exit code 0, no issues)
